@@ -1,0 +1,16 @@
+jwt:
+  secret: ${JWT_PRIVATE_KEY:432646294A404E635266546A576E5A7234753778214125442A472D4B6150645367566B58703273357638792F423F4528482B4D6251655468576D5A7133743677}
+spring:
+  cloud:
+    gateway:
+      globalcors:
+        add-to-simple-url-handler-mapping: true
+        cors-configurations:
+          '[/**]':
+#            allowedOriginPatterns: "http://localhost:[*]"
+            allowedOrigins: "*"
+            allowedHeaders: "*"
+            allowedMethods: "*"
+#              - GET
+#              - POST
+#              - OPTIONS
