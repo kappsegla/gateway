@@ -22,23 +22,28 @@ public class GatewayConfig {
                         .filters(f -> f
                                         .filter(jwtAuthFilter)
                                         .dedupeResponseHeader("Access-Control-Allow-Origin", String.valueOf(Strategy.RETAIN_FIRST))
-                                //.rewritePath("/users/(?<segment>.*)", "/users/${segment}")
+                                        .rewritePath("/users/(?<segment>.*)", "/users/${segment}")
                                 //.addRequestHeader("userID", "")
                         ).uri("http://localhost:8002"))
-                .route("image-service", r -> r.path("/images")
+                .route("image-service", r -> r.path("/images/**")
                         .filters(f -> f
-                                .filter(jwtAuthFilter)
-                                .dedupeResponseHeader("Access-Control-Allow-Origin", String.valueOf(Strategy.RETAIN_FIRST)))
+                                //.filter(jwtAuthFilter)
+                                .dedupeResponseHeader("Access-Control-Allow-Origin", String.valueOf(Strategy.RETAIN_FIRST))
+                                .dedupeResponseHeader("Access-Control-Request-Method", String.valueOf(Strategy.RETAIN_FIRST))
+                                .dedupeResponseHeader("Access-Control-Request-Headers", String.valueOf(Strategy.RETAIN_FIRST)))
                         .uri("http://localhost:8001"))
-                .route("image-service", r -> r.path("/images/*")
-                        .filters(f -> f
-                                .dedupeResponseHeader("Access-Control-Allow-Origin", String.valueOf(Strategy.RETAIN_FIRST)))
-                        .uri("http://localhost:8001"))
+
                 .route("auth-service", r -> r.path("/auth")
                         .filters(f -> f
                                 .filter(jwtAuthFilter)
                                 .dedupeResponseHeader("Access-Control-Allow-Origin", String.valueOf(Strategy.RETAIN_FIRST))
                                 .rewritePath("/auth", "/api/auth/login"))
+                        .uri("http://localhost:8003"))
+                .route("auth-service", r -> r.path("/register")
+                        .filters(f -> f
+                                .filter(jwtAuthFilter)
+                                .dedupeResponseHeader("Access-Control-Allow-Origin", String.valueOf(Strategy.RETAIN_FIRST))
+                                .rewritePath("/register", "/api/auth"))
                         .uri("http://localhost:8003")).build();
 
     }

@@ -1,6 +1,7 @@
 package com.example.gateway;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
@@ -32,10 +33,12 @@ public class AuthenticationFilter implements GatewayFilter {
                 return this.onError(exchange, "Authorization header is missing in request", HttpStatus.UNAUTHORIZED);
 
             final String token = this.getAuthHeader(request);
-
-            if (jwtUtil.isInvalid(token))
-                return this.onError(exchange, "Authorization header is invalid", HttpStatus.UNAUTHORIZED);
-
+            try {
+                if (jwtUtil.isInvalid(token))
+                    return this.onError(exchange, "Authorization header is invalid", HttpStatus.UNAUTHORIZED);
+            } catch (ExpiredJwtException e){
+                return this.onError(exchange, "Token is expired", HttpStatus.UNAUTHORIZED);
+            }
             this.populateRequestWithHeaders(exchange, token);
         }
         return chain.filter(exchange);
