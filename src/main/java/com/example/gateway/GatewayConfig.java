@@ -29,9 +29,10 @@ public class GatewayConfig {
                         .filters(f -> f
                                 //.filter(jwtAuthFilter)
                                 .dedupeResponseHeader("Access-Control-Allow-Origin", String.valueOf(Strategy.RETAIN_FIRST))
-                                .dedupeResponseHeader("Access-Control-Request-Method", String.valueOf(Strategy.RETAIN_FIRST))
-                                .dedupeResponseHeader("Access-Control-Request-Headers", String.valueOf(Strategy.RETAIN_FIRST)))
-                        .uri("http://localhost:8001"))
+                                        .removeRequestHeader("Origin")
+                         //       .dedupeResponseHeader("Access-Control-Request-Method", String.valueOf(Strategy.RETAIN_FIRST))
+                         //       .dedupeResponseHeader("Access-Control-Request-Headers", String.valueOf(Strategy.RETAIN_FIRST))
+                        ).uri("http://localhost:8001"))
 
                 .route("auth-service", r -> r.path("/auth")
                         .filters(f -> f
