@@ -18,20 +18,24 @@ public class GatewayConfig {
     @Bean
     public RouteLocator myRoutes(RouteLocatorBuilder builder) {
         return builder.routes()
+                .route("post-service", r -> r.path("/posts/**")
+                        .filters(f -> f
+                                .filter(jwtAuthFilter)
+                                .dedupeResponseHeader("Access-Control-Allow-Origin", String.valueOf(Strategy.RETAIN_FIRST))
+                        ).uri("http://localhost:8000"))
+
                 .route("user-service", r -> r.path("/users/**")
                         .filters(f -> f
-                                        .filter(jwtAuthFilter)
-                                        .dedupeResponseHeader("Access-Control-Allow-Origin", String.valueOf(Strategy.RETAIN_FIRST))
-                                        .rewritePath("/users/(?<segment>.*)", "/users/${segment}")
-                                //.addRequestHeader("userID", "")
+                                .filter(jwtAuthFilter)
+                                .dedupeResponseHeader("Access-Control-Allow-Origin", String.valueOf(Strategy.RETAIN_FIRST))
+                                .rewritePath("/users/(?<segment>.*)", "/users/${segment}")
                         ).uri("http://localhost:8002"))
+
                 .route("image-service", r -> r.path("/images/**")
                         .filters(f -> f
-                                //.filter(jwtAuthFilter)
+                                .filter(jwtAuthFilter)
                                 .dedupeResponseHeader("Access-Control-Allow-Origin", String.valueOf(Strategy.RETAIN_FIRST))
-                                        .removeRequestHeader("Origin")
-                         //       .dedupeResponseHeader("Access-Control-Request-Method", String.valueOf(Strategy.RETAIN_FIRST))
-                         //       .dedupeResponseHeader("Access-Control-Request-Headers", String.valueOf(Strategy.RETAIN_FIRST))
+                                .removeRequestHeader("Origin")
                         ).uri("http://localhost:8001"))
 
                 .route("auth-service", r -> r.path("/auth")
@@ -40,12 +44,18 @@ public class GatewayConfig {
                                 .dedupeResponseHeader("Access-Control-Allow-Origin", String.valueOf(Strategy.RETAIN_FIRST))
                                 .rewritePath("/auth", "/api/auth/login"))
                         .uri("http://localhost:8003"))
-                .route("auth-service", r -> r.path("/register")
+
+                .route("auth-register-service", r -> r.path("/register")
                         .filters(f -> f
                                 .filter(jwtAuthFilter)
                                 .dedupeResponseHeader("Access-Control-Allow-Origin", String.valueOf(Strategy.RETAIN_FIRST))
                                 .rewritePath("/register", "/api/auth"))
-                        .uri("http://localhost:8003")).build();
+                        .uri("http://localhost:8003"))
 
+                .route("like-service", r -> r.path("/like/**")
+                        .filters(f -> f
+                                .filter(jwtAuthFilter)
+                                .dedupeResponseHeader("Access-Control-Allow-Origin", String.valueOf(Strategy.RETAIN_FIRST)))
+                        .uri("http://localhost:8005")).build();
     }
 }
