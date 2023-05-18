@@ -21,7 +21,7 @@ public class JwtUtil {
     }
 
     public Claims getAllClaimsFromToken(String token) {
-        return Jwts.parserBuilder().setSigningKey(secret).build().parseClaimsJws(token).getBody();
+        return Jwts.parserBuilder().setSigningKey(secret).setAllowedClockSkewSeconds(10).build().parseClaimsJws(token).getBody();
     }
 
     private boolean isTokenExpired(String token) {

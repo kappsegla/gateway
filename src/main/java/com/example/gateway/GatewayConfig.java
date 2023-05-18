@@ -5,6 +5,7 @@ import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 
 @Configuration
 public class GatewayConfig {
@@ -51,6 +52,19 @@ public class GatewayConfig {
                                 .dedupeResponseHeader("Access-Control-Allow-Origin", String.valueOf(Strategy.RETAIN_FIRST))
                                 .rewritePath("/register", "/api/auth"))
                         .uri("http://localhost:8003"))
+
+                .route("post-short-link-service", r -> r.path("/short").and().method(HttpMethod.POST)
+                        .filters(f -> f
+                              //  .filter(jwtAuthFilter)
+                                .dedupeResponseHeader("Access-Control-Allow-Origin", String.valueOf(Strategy.RETAIN_FIRST))
+                                .rewritePath("/short", "/")
+                        ).uri("http://localhost:8004"))
+
+                .route("get-short-link-service", r -> r.path("/short/**").and().method(HttpMethod.GET)
+                        .filters(f -> f
+                                .dedupeResponseHeader("Access-Control-Allow-Origin", String.valueOf(Strategy.RETAIN_FIRST))
+                                .rewritePath("/short/(?<segment>.*)", "/${segment}")
+                        ).uri("http://localhost:8004"))
 
                 .route("like-service", r -> r.path("/like/**")
                         .filters(f -> f
