@@ -55,15 +55,15 @@ public class GatewayConfig {
 
                 .route("post-short-link-service", r -> r.path("/short").and().method(HttpMethod.POST)
                         .filters(f -> f
-                              //  .filter(jwtAuthFilter)
+                                .filter(jwtAuthFilter)
                                 .dedupeResponseHeader("Access-Control-Allow-Origin", String.valueOf(Strategy.RETAIN_FIRST))
-                                .rewritePath("/short", "/")
+                                .rewritePath("/short", "/urlShortener")
                         ).uri("http://localhost:8004"))
 
-                .route("get-short-link-service", r -> r.path("/short/**").and().method(HttpMethod.GET)
+                .route("get-short-link-service", r -> r.path("/urlShortener/**").and().method(HttpMethod.GET)
                         .filters(f -> f
                                 .dedupeResponseHeader("Access-Control-Allow-Origin", String.valueOf(Strategy.RETAIN_FIRST))
-                                .rewritePath("/short/(?<segment>.*)", "/${segment}")
+                               // .rewritePath("/urlShortener/(?<segment>.*)", "/${segment}")
                         ).uri("http://localhost:8004"))
 
                 .route("like-service", r -> r.path("/like/**")
