@@ -14,7 +14,7 @@
     <name>gateway</name>
     <description>gateway</description>
     <properties>
-        <java.version>20</java.version>
+        <java.version>17</java.version>
         <spring-cloud.version>2022.0.2</spring-cloud.version>
     </properties>
     <dependencies>
@@ -75,5 +75,36 @@
             </plugin>
         </plugins>
     </build>
+    <profiles>
+        <profile>
+            <id>native</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.graalvm.buildtools</groupId>
+                        <artifactId>native-maven-plugin</artifactId>
+                        <extensions>true</extensions>
+                        <executions>
+                            <execution>
+                                <id>build-native</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>build</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <imageName>gateway</imageName>
+                            <buildArgs>
+                                <buildArg>-H:+ReportExceptionStackTraces</buildArg>
+                                <buildArg>-H:+StaticExecutableWithDynamicLibC</buildArg>
+                            </buildArgs>
+                        </configuration>
+                    </plugin>
+                    <!-- Rest of profile hidden, to high-light relevant parts -->
+                </plugins>
+            </build>
 
+        </profile>
+    </profiles>
 </project>
